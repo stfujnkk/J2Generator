@@ -7,7 +7,7 @@
         "import": {
             "description": "导入其他配置文件",
             "type": "array",
-            "additionalProperties": {
+            "items": {
                 "type": "string"
             }
         },
@@ -18,7 +18,7 @@
         "pathMappings": {
             "description": "文件路径映射",
             "type": "array",
-            "additionalProperties": {
+            "items": {
                 "type": "object",
                 "properties": {
                     "name": {
@@ -36,7 +36,7 @@
                     "import": {
                         "description": "导入其他配置文件",
                         "type": "array",
-                        "additionalProperties": {
+                        "items": {
                             "type": "string"
                         }
                     }
