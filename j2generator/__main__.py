@@ -19,9 +19,11 @@ def import_conf(conf: Dict):
     '''
     导入外部配置
     '''
+    normalize_config(conf)
     for p in conf['import']:
         with open(p, encoding=env['encode']) as f:
             c: Dict = json.load(f)
+            normalize_config(c)
             for k, v in c['defines'].items():
                 if k in conf['defines']:
                     continue
@@ -118,6 +120,13 @@ def core_processor(template_path: str, output_path: str, context: Dict) -> None:
             i += 1
         pass
     pass
+
+
+def normalize_config(conf:Dict):
+    if 'import' not in conf:
+        conf['import']=[]
+    if 'defines' not in conf:
+        conf['defines']={}
 
 
 def main():
