@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "j2generator schema",
+    "description": "j2generator json配置约束",
+    "type": "object",
+    "properties": {
+        "import": {
+            "description": "导入其他配置文件",
+            "type": "array",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "defines": {
+            "description": "定义公共变量",
+            "type": "object"
+        },
+        "pathMappings": {
+            "description": "文件路径映射",
+            "type": "array",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "模板文件夹名称",
+                        "type": "string"
+                    },
+                    "path": {
+                        "description": "映射的路径",
+                        "type": "string"
+                    },
+                    "defines": {
+                        "description": "定义变量",
+                        "type": "object"
+                    },
+                    "import": {
+                        "description": "导入其他配置文件",
+                        "type": "array",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "name",
+                    "path"
+                ]
+            }
+        }
+    },
+    "required": [
+        "pathMappings"
+    ]
+}
