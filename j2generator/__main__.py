@@ -22,6 +22,16 @@ def normalize_config(conf: Dict):
         conf['defines'] = {}
 
 
+def merge_path_mappings(conf1:Dict ,conf2:Dict):
+    names1=set()
+    for item in conf1['pathMappings']:
+        names1.add(item['name'])
+    for item in conf2['pathMappings']:
+        if item['name'] in names1:
+            continue
+        conf1['pathMappings'].append(item)
+
+
 def import_conf(conf: Dict):
     '''
     导入外部配置
@@ -37,7 +47,8 @@ def import_conf(conf: Dict):
                 if k in conf['defines']:
                     continue
                 conf['defines'][k] = v
-    conf['import']=[]
+            merge_path_mappings(conf,c)
+    conf['import'] = []
 
 
 def path_parse(prefix: str, pattern: str, context: Dict, **kwargs) -> Generator[Tuple[Dict, str], None, None]:
