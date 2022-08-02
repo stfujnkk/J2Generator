@@ -7,13 +7,16 @@ from typing import Dict, List
 import pymysql
 import json
 
-HOST = 'localhost'
-USER = 'root'
-PASSWD = '123456'
-DATABASE = 'fingard'
-ENCODING= 'utf8'
-PORT = 3306
-
+# 默认连接
+db= {
+    "host": "localhost",
+    "user": "root",
+    "password":"123456",
+    "database": "fingard",
+    "charset": "utf8",
+    "port": 3306
+}
+ENCODING='utf8'
 data_type_map: Dict[str, str] = {
     "VARCHAR": "String",
     "CHAR": "String",
@@ -110,7 +113,7 @@ def save_json_config(file_path: str, DTO, indent=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        'mysqlgen', description='A general file generator using jinja2 syntax')
+        'mysqlgen', description='Extract database table information')
     parser.add_argument("main_conf_path", help="主配置路径", default='j2g.json')
     parser.add_argument("-o","--output", help="扩展配置输出路径", default='ext.json',required=False)
     parser.add_argument("-e", "--encode", help="文件编码")
@@ -121,14 +124,17 @@ def main():
     if args.encode:
         ENCODING = args.encode
     enames, tables = [], []
-    conn = pymysql.connect(host=HOST, user=USER,
-                           password=PASSWD, database=DATABASE, charset='utf8', port=PORT)
     # 备份原文件
     copyfile(main_conf_path, main_conf_path+'.bak')
     with open(main_conf_path, "r", encoding=ENCODING) as f:
         main_conf = json.load(f)
         enames = main_conf['defines']['entities']
         tables = main_conf['defines']['tables']
+    if 'db' in main_conf:
+        db.update(main_conf['db'])
+    if 'port' in db:
+        db['port']=int(db['port'])
+    conn = pymysql.connect(**db)
     save_json_config(ext_conf_path, gen_entities(
         conn=conn, entities_name=enames, tables=tables), indent=4)
     print('配置文件已经成功保存在 {}'.format(ext_conf_path))
