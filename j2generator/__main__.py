@@ -31,14 +31,16 @@ def import_conf(conf: Dict):
         with open(p, encoding=env['encode']) as f:
             c: Dict = json.load(f)
             normalize_config(c)
+            if len(c['import']) > 0:
+                import_conf(c)
             for k, v in c['defines'].items():
                 if k in conf['defines']:
                     continue
                 conf['defines'][k] = v
-    del conf['import']
+    conf['import']=[]
 
 
-def path_parse(prefix: str, pattern: str, context: Dict,**kwargs) -> Generator[Tuple[Dict, str], None, None]:
+def path_parse(prefix: str, pattern: str, context: Dict, **kwargs) -> Generator[Tuple[Dict, str], None, None]:
     '''
     用context里的变量和pattern解析
 
@@ -73,7 +75,7 @@ def path_parse(prefix: str, pattern: str, context: Dict,**kwargs) -> Generator[T
             for v in val:
                 context['__index__'].append(i)
                 context['__val__'].append(v)
-                yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context,**kwargs)
+                yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context, **kwargs)
                 context['__index__'].pop()
                 context['__val__'].pop()
                 i += 1
@@ -132,19 +134,20 @@ def core_processor(template_path: str, output_path: str, context: Dict) -> None:
         listdir, i = os.listdir(template_path), 0
         for item in listdir:
             next_template_path = path.join(template_path, item)
-            old_val, last_dir,old_index =  context['__val__'], path.basename(output_path),context['__index__']
-            old_len=context['__len__']
-            old_arr=context['__arr__']
+            old_val, last_dir, old_index = context['__val__'], path.basename(
+                output_path), context['__index__']
+            old_len = context['__len__']
+            old_arr = context['__arr__']
             # 不能连等,否则会用同一个引用
-            context['__len__'] =[]
+            context['__len__'] = []
             context['__index__'] = []
             context['__val__'] = []
             context['__arr__'] = []
-            for next_context, next_output_path in path_parse(prefix=output_path, pattern='/'+item, context=context,old_val=old_val,last_dir=last_dir,old_index=old_index):
+            for next_context, next_output_path in path_parse(prefix=output_path, pattern='/'+item, context=context, old_val=old_val, last_dir=last_dir, old_index=old_index):
                 core_processor(next_template_path,
                                next_output_path, context=next_context)
             i += 1
-            context['__len__'] =old_len
+            context['__len__'] = old_len
             context['__index__'] = old_index
             context['__val__'] = old_val
             context['__arr__'] = old_arr
@@ -153,7 +156,8 @@ def core_processor(template_path: str, output_path: str, context: Dict) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser('j2generator', description='A general file generator using jinja2 syntax')
+    parser = argparse.ArgumentParser(
+        'j2generator', description='A general file generator using jinja2 syntax')
     parser.add_argument("-t", "--template", help="模板的根路径", default='templates')
     parser.add_argument("-c", "--config", help="配置文件路径", default='j2g.json')
     parser.add_argument("-e", "--encode", help="默认编码", default='utf8')
@@ -192,4 +196,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    print(sys.path)
