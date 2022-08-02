@@ -15,6 +15,13 @@ from jinja2 import Template
 env = {}
 
 
+def normalize_config(conf: Dict):
+    if 'import' not in conf:
+        conf['import'] = []
+    if 'defines' not in conf:
+        conf['defines'] = {}
+
+
 def import_conf(conf: Dict):
     '''
     导入外部配置
@@ -31,21 +38,28 @@ def import_conf(conf: Dict):
     del conf['import']
 
 
-def path_parse(prefix: str, pattern: str, context: Dict) -> Generator[Tuple[Dict, str], None, None]:
+def path_parse(prefix: str, pattern: str, context: Dict,**kwargs) -> Generator[Tuple[Dict, str], None, None]:
     '''
     用context里的变量和pattern解析
 
     例1:  prefix="aa" pattern="{{a}}-{{b}}" context={"a":"G","b":[0,1,2]}。输出 [ "aaG0" ,"aaG1","aaG2"]
     '''
     last_index = 0
-    # 用deepcopy浪费内存，不过方便改成多线程的
-    # 单线程的情况可以用回溯法节约内存
-    # local_context = deepcopy(context)
     for i in re.finditer(r'{{([^}]*)}}', pattern):
         start, end = i.span()
         prefix += pattern[last_index:start]
         last_index = end
         k = i.group(1).strip()
+        if k.isdigit():
+            k = int(k)
+            if k == 0:
+                prefix += kwargs['last_dir']
+            elif k > 0:
+                prefix += kwargs['old_val'][k-1]
+            else:
+                prefix += kwargs['old_val'][k]
+            continue
+
         val = context.get(k, '')
         if k not in context:
             logging.warning(f'变量{k}不存在')
@@ -59,13 +73,17 @@ def path_parse(prefix: str, pattern: str, context: Dict) -> Generator[Tuple[Dict
             for v in val:
                 context['__index__'].append(i)
                 context['__val__'].append(v)
-                yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context)
+                yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context,**kwargs)
                 context['__index__'].pop()
                 context['__val__'].pop()
                 i += 1
             context['__arr__'].pop()
             context['__len__'].pop()
             return
+        context['__arr__'].append(val)
+        context['__len__'].append(None)
+        context['__index__'].append(None)
+        context['__val__'].append(val)
         prefix += val
 
     yield context, prefix+pattern[last_index:]
@@ -109,28 +127,33 @@ def core_processor(template_path: str, output_path: str, context: Dict) -> None:
             copyfile(template_path, output_path)
     else:
         if not os.path.exists(output_path):
-            os.mkdir(output_path)
+            os.makedirs(output_path)
         # 如果是文件夹
         listdir, i = os.listdir(template_path), 0
         for item in listdir:
             next_template_path = path.join(template_path, item)
-            for next_context, next_output_path in path_parse(prefix=output_path, pattern='/'+item, context=context):
+            old_val, last_dir,old_index =  context['__val__'], path.basename(output_path),context['__index__']
+            old_len=context['__len__']
+            old_arr=context['__arr__']
+            # 不能连等,否则会用同一个引用
+            context['__len__'] =[]
+            context['__index__'] = []
+            context['__val__'] = []
+            context['__arr__'] = []
+            for next_context, next_output_path in path_parse(prefix=output_path, pattern='/'+item, context=context,old_val=old_val,last_dir=last_dir,old_index=old_index):
                 core_processor(next_template_path,
                                next_output_path, context=next_context)
             i += 1
+            context['__len__'] =old_len
+            context['__index__'] = old_index
+            context['__val__'] = old_val
+            context['__arr__'] = old_arr
         pass
     pass
 
 
-def normalize_config(conf:Dict):
-    if 'import' not in conf:
-        conf['import']=[]
-    if 'defines' not in conf:
-        conf['defines']={}
-
-
 def main():
-    parser = argparse.ArgumentParser('j2generator', description='xxx')
+    parser = argparse.ArgumentParser('j2generator', description='A general file generator using jinja2 syntax')
     parser.add_argument("-t", "--template", help="模板的根路径", default='templates')
     parser.add_argument("-c", "--config", help="配置文件路径", default='j2g.json')
     parser.add_argument("-e", "--encode", help="默认编码", default='utf8')
