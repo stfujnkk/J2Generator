@@ -67,33 +67,32 @@ def path_parse(prefix: str, pattern: str, context: Dict, **kwargs) -> Generator[
         if k.isdigit():
             k = int(k)
             if k == 0:
-                prefix += kwargs['last_dir']
+                val= kwargs['last_dir']
             elif k > 0:
-                prefix += kwargs['old_val'][k-1]
+                val= kwargs['old_val'][k-1]
             else:
-                prefix += kwargs['old_val'][k]
-            continue
-
-        val = context.get(k, '')
-        if k not in context:
-            logging.warning(f'变量{k}不存在')
-            continue
-        if type(val) is list:
-            # TODO val 元素不为 str 时没考虑 ??? 直接用 __val__
-            i, n = 0, len(val)
-            # 添加局部上下文
-            context['__arr__'].append(val)
-            context['__len__'].append(n)
-            for v in val:
-                context['__index__'].append(i)
-                context['__val__'].append(v)
-                yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context, **kwargs)
-                context['__index__'].pop()
-                context['__val__'].pop()
-                i += 1
-            context['__arr__'].pop()
-            context['__len__'].pop()
-            return
+                val= kwargs['old_val'][k]
+        else:
+            val = context.get(k, '')
+            if k not in context:
+                logging.warning(f'变量{k}不存在')
+                continue
+            if type(val) is list:
+                # TODO val 元素不为 str 时没考虑 ??? 直接用 __val__
+                i, n = 0, len(val)
+                # 添加局部上下文
+                context['__arr__'].append(val)
+                context['__len__'].append(n)
+                for v in val:
+                    context['__index__'].append(i)
+                    context['__val__'].append(v)
+                    yield from path_parse(prefix + str(v), pattern=pattern[end:], context=context, **kwargs)
+                    context['__index__'].pop()
+                    context['__val__'].pop()
+                    i += 1
+                context['__arr__'].pop()
+                context['__len__'].pop()
+                return
         context['__arr__'].append(val)
         context['__len__'].append(None)
         context['__index__'].append(None)

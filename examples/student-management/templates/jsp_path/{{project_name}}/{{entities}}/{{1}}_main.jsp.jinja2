@@ -1,0 +1,76 @@
+<%--
+  User: {{author}}
+  Date: {{__date__}}
+--%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@include file="/common/include.jsp" %>
+{% set cls_name=__val__[0] %}
+<tiles:insertDefinition name="listLayout">
+    <tiles:putAttribute name="title" type="string" value="{{ __file__ }}"/>
+    <%-- 查询 --%>
+    <tiles:putAttribute name="queryuc" type="string" value="UC_{{ cls_name | upper }}_QUERY"/>
+    <tiles:putAttribute name="crudWinMax" type="string" value="0"/>
+    <tiles:putAttribute name="crudWinSize" type="string" value="1200,450"/>
+    <tiles:putAttribute name="pks" type="string" value="urid"/>
+    <tiles:putAttribute name="entity" type="string" value="com.fingard.ats.core.db.{{project_name}}.dto.{{cls_name}}Dto"/>
+    <%-- 查询 --%>
+    <%-- 新增 --%>
+    <tiles:putAttribute name="addjsp" type="string"
+                        value="/modules/{{project_name}}/{{cls_name}}/{{cls_name}}_add.jsp?uc=UC_{{ cls_name | upper }}_ADD"/>
+    <tiles:putAttribute name="showAddButton" type="string" value="1"/>
+    <tiles:putAttribute name="addButtonUC" type="string" value="UC_{{ cls_name | upper }}_ADD"/>
+    <%-- 新增 --%>
+    <%-- 修改 --%>
+    <tiles:putAttribute name="modjsp" type="string"
+                        value="/modules/{{project_name}}/{{cls_name}}/{{cls_name}}_add.jsp?uc=UC_{{ cls_name | upper }}_MOD"/>
+    <tiles:putAttribute name="showModButton" type="string" value="1"/>
+    <tiles:putAttribute name="modButtonUC" type="string" value="UC_{{ cls_name | upper }}_MOD"/>
+    <%-- 修改 --%>
+
+    <tiles:putAttribute name="custButtonLength" type="string" value="1"/>
+    <%-- 自定义删除 --%>
+    <tiles:putAttribute name="custButtonImage1" type="string" value="delete_icon"/>
+    <tiles:putAttribute name="custButtonTitle1" type="string" value="删除"/>
+    <tiles:putAttribute name="custButtonAction1" type="string" value="1"/>
+    <tiles:putAttribute name="custButtonType1" type="string" value="3"/>
+    <tiles:putAttribute name="custButtonActionMulti1" type="string" value="1"/>
+    <tiles:putAttribute name="custButtonSelected1" type="string" value="0"/>
+    <tiles:putAttribute name="custButtonConfirm1" type="string" value="1"/>
+    <tiles:putAttribute name="custButtonConName1" type="string" value="urid"/>
+    <tiles:putAttribute name="custButtonFn1" type="string" value="remove{{cls_name}}"/>
+    <tiles:putAttribute name="custButtonUC1" type="string" value="UC_{{ cls_name | upper }}_DEL"/>
+    <%-- 自定义删除 --%>
+    <%-- 详情页面 --%>
+    <tiles:putAttribute name="detailjsp" type="string" value="/modules/{{project_name}}/{{cls_name}}/{{cls_name}}_detail.jsp"/>
+    <%-- 详情页面 --%>
+</tiles:insertDefinition>
+
+<script>
+    var remove{{cls_name}} = function () {
+        var checkedRows = $I('grid').FGrid('getSelectedDatas');
+        if (checkedRows.length < 1) {
+            $.FMessage.alert("消息", "请至少选择一条记录!", $('body').doUnMask());
+            return false;
+        }
+        var pksval = [];
+        for (var i = 0, n = checkedRows.length; i < n; i++) {
+            pksval.push(checkedRows[i]['urid']);
+        }
+        Ajax.req({
+            url: '${pageContext.request.contextPath}/common/common!exeCRUD.do',
+            params: {
+                entity: 'com.fingard.ats.core.db.{{project_name}}.dto.{{cls_name}}Dto',
+                uc: 'UC_{{ cls_name | upper }}_DEL',
+                pksval: pksval + '',
+                pks: 'urid',
+                optype: 'del'
+            },
+            ok: (text) => {
+                $.FMessage.alert("消息", text, refreshGrid);
+            },
+            err: (text) => {
+                $.FMessage.alert("消息",text, $('body').doUnMask());
+            }
+        });
+    }
+</script>

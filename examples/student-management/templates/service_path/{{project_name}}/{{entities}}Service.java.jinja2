@@ -1,0 +1,13 @@
+package com.fingard.ats.business.front.{{project_name}};
+import com.fingard.rdc.pub.service.ComRowSet;
+import com.fingard.rdc.pub.util.ComSvcCaller;
+
+{% set cls_name=__val__[0] %}
+/**
+ * @author {{author}} on {{__date__}}.
+ */
+public interface {{cls_name}}Service {
+    ComRowSet add(ComSvcCaller params);
+    ComRowSet del(ComSvcCaller params);
+    ComRowSet edit(ComSvcCaller params);
+}

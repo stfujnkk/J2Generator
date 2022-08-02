@@ -1,0 +1,34 @@
+package com.fingard.ats.business.front.{{project_name}}.impl;
+
+import com.fingard.ats.business.common.bo.impl.SimpleCrudBO;
+import com.fingard.ats.core.common.bo.ICrudBO;
+import com.fingard.rdc.devtools.app.pub.dao.CommonDAO;
+import com.fingard.rdc.pub.service.ComRowSet;
+import com.fingard.rdc.pub.util.ComSvcCaller;
+import com.fingard.rdc.pub.util.Globals;
+{% set cls_name=__val__[0] %}
+import com.fingard.ats.core.db.{{project_name}}.dao.StudentDAO;
+import com.fingard.ats.business.front.{{project_name}}.{{cls_name}}Service;
+
+public class {{cls_name}}ServiceImpl extends SimpleCrudBO implements {{cls_name}}Service {
+    // 通用dao和service
+    protected static final ICrudBO crudBO = (ICrudBO) Globals.getBean("CrudBO");
+    protected static final CommonDAO commonDAO = (CommonDAO) Globals.getBean("CommonDAO");
+
+    protected static final StudentDAO studentDAO = (StudentDAO) Globals.getBean("studentDao");
+
+    @Override
+    public ComRowSet add(ComSvcCaller params) {
+        return this.simpleCrud(params);
+    }
+
+    @Override
+    public ComRowSet del(ComSvcCaller params) {
+        return this.simpleCrud(params);
+    }
+
+    @Override
+    public ComRowSet edit(ComSvcCaller params) {
+        return this.simpleCrud(params);
+    }
+}

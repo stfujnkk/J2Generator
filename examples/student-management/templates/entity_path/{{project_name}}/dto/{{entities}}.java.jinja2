@@ -1,0 +1,27 @@
+package com.fingard.ats.core.db.{{project_name}}.dto;
+
+import com.fingard.ats.core.db.common.dto.BaseTenantBizDto;
+import java.util.Date;
+{% set cls_name = __val__[0] %}
+/**
+* 
+* @author {{author}}
+* @date {{__date__}}
+*/
+public class {{cls_name}}Dto extends BaseTenantBizDto implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+    public final static String TABLE_NAME = "{{ DTO[ cls_name ]['table'] }}";
+
+    {%- for col in DTO[ cls_name ]['cols']  %}
+    /**
+     * {{col['commit']}}
+     */
+    private {{col['type']}} {{col['name']}};
+    {%-  endfor  %}
+
+    @Override
+    public  String getTableName(){
+        return this.TABLE_NAME;
+    }
+
+}

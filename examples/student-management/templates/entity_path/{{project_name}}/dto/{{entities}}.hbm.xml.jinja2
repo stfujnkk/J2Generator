@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+{% set cls_name = __val__[0] %}
+<hibernate-mapping>
+    <class name="com.fingard.ats.core.db.{{project_name}}.dto.{{cls_name}}Dto" table="{{ DTO[ cls_name ]['table'] }}">
+        <id name="urid">
+            <column name="URID"/>
+            <generator class="com.fingard.ats.core.common.util.db.AtsIdentifierGenerator"/>
+        </id>
+        <version name="rowversion" column="rowversion"></version>
+
+        {%- for col in DTO[ cls_name ]['cols'] if col['name'] not in ['rowversion','urid'] %}
+        <!-- {{col['commit']}} -->
+        <property name="{{col['name']}}">
+            <column name="{{col['name']}}">
+            </column>
+        </property>
+        {%-  endfor  %}
+        
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,41 @@
+{
+    "$schema": "https://raw.githubusercontent.com/stfujnkk/J2Generator/main/schema.json",
+    "pathMappings": [
+        {
+            "name": "db_config_path",
+            "path": "ats/core/ats-core-db/src/main/resources/spring"
+        },
+        {
+            "name": "entity_path",
+            "path": "ats/core/ats-core-db/src/main/java/com/fingard/ats/core/db"
+        },
+        {
+            "name": "jsp_path",
+            "path": "ats/web/ats-web-front/src/main/webapp/modules"
+        },
+        {
+            "name": "service_path",
+            "path": "ats/core/ats-business-front/src/main/java/com/fingard/ats/business/front"
+        }
+    ],
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "password": "123456",
+        "database": "fingard",
+        "charset": "utf8",
+        "port": "3306"
+    },
+    "defines": {
+        "project_name": "student-mgr",
+        "author": "lyf",
+        "entities": [
+            "Student",
+            "Class"
+        ],
+        "tables": [
+            "t_learn_student",
+            "t_learn_class"
+        ]
+    }
+}

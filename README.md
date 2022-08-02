@@ -2,7 +2,7 @@
 
 一个使用jinja2语法的通用文件生成器
 
-# 安装
+## 安装
 
 ```bash
 git clone https://github.com/stfujnkk/J2Generator
@@ -11,12 +11,15 @@ python setup.py install
 # 获取帮助
 j2g -h
 ```
+## 示例
+
+- [student-management](examples/student-management/student-management.md)
 
 ## 快速开始
 
 使用时会默认读取当前目录下的`jsg.json`作为配置文件。默认的模板路径为当前目录下的`templates`文件夹。模板文件以jinja2为后缀。生成时会去除后缀。语法细节参考[jinja2文档](http://docs.jinkan.org/docs/jinja2/)
 
-初始化环境如下
+初始环境如下
 
 ```txt
 .
@@ -97,7 +100,7 @@ j2g -h
 
 ### 配置
 
-一个最简配置如下。配置了**"$schema"**项在[VSCODE](https://code.visualstudio.com/) 里打开文件可以获得完整的**配置约束**和**语法支持**。
+一个最简配置如下。配置了 **$schema** 项在[VSCODE](https://code.visualstudio.com/) 里打开文件可以获得完整的 **配置约束** 和 **语法支持** 。
 
 ```json
 {
@@ -215,34 +218,5 @@ import 里为外部配置文件的路径列表。程序会合并多个配置文�
 
 ## 辅助工具
 
-### mysqlgen
-
-用于连接mysql 数据库，生成对应的数据表信息用于生成对应的类。需要在配置文件里定义实体类名称和对应的表名。
-
-修改`j2g.json`配置如下
-
-```json
-{
-    "$schema": "https://raw.githubusercontent.com/stfujnkk/J2Generator/main/schema.json",
-    "pathMappings": [],
-    "defines": {
-        "entities": [
-            "Student",
-            "Class"
-        ],
-        "tables": [
-            "t_learn_student",
-            "t_learn_class"
-        ]
-    }
-}
-```
-
-命令如下
-
-```bash
-python mysqlgen [-h] [-o OUTPUT] [-e ENCODE] main_conf_path
-```
-
-其中`main_conf_path`为j2g配置文件路径。
+- [mysqlgen](tools/mysqlgen.md) 用于连接mysql 数据库，生成对应的数据表信息用于生成对应的类
 

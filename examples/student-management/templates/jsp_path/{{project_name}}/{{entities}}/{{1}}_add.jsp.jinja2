@@ -1,0 +1,87 @@
+<%--
+  User: {{author}}
+  Date: {{__date__}}
+--%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@include file="/common/include.jsp" %>
+<%
+    String formUrl = basePath + "/common/common!exeCRUD.do";
+%>
+{% set cls_name= __val__[0] %}
+{% set form_id= cls_name+'_form' %}
+<head>
+    <%@include file="/common/head.jsp" %>
+    <title>{{__file__}}</title>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#save").bind("click", function () {
+                $I("{{form_id | lower}}").FForm({
+                    method: "POST",
+                    params:{
+                        isactive:$("#isactive").attr("checked")=="checked"?'1':'0',
+                    }
+                });
+                $("#{{form_id | lower}}").FValidate({errorModel:'qtip'});
+                if ($("#{{form_id | lower}}").valid()) {
+                    $I("{{form_id | lower}}").FForm('submit');
+                }
+            });
+
+            if('${param.urid}'!=null&&'${param.urid}'!=""){
+                //获取表单的初始值
+                Ajax.req({
+                    url: 'common/common!exeQueryBo.do',
+                    type:"json",
+                    params: {
+                        urid:'${param.urid}',
+                        uc: 'UC_{{ cls_name | upper }}_QUERY'
+                    },
+                    ok: function(text) {
+                        var entity = jQuery.parseJSON(text);
+                        //给定初始值
+                        $I('{{form_id | lower}}').FForm('setValues', entity.data[0]);
+                    },
+                    err: function(text) {
+                        $.FMessage.alert("消息",i18n("操作失败！{0}",text));
+                    }
+                });
+            }
+
+        });
+
+        //后退功能
+        var backGrid = function() {
+            parent.location.reload();
+        };
+
+    </script>
+
+
+</head>
+<body>
+<f:buttonGroup classes="btnbar-detail">
+    <f:button id="save" text="保存" iconCls="save_icon"/>
+    <f:button id="back" text="返回" onClick="backGrid" iconCls="returnone_icon"/>
+</f:buttonGroup>
+<div>
+    <f:form action="<%=formUrl%>" onSuccess="showResponse" onFailure="showError" id="{{form_id | lower}}">
+        <input type="hidden" id="uc" name="uc" value="${param.uc}" />
+        <input type="hidden" id="entity" name="entity" value="com.fingard.ats.core.db.{{project_name}}.dto.{{cls_name}}Dto" />
+        <input type="hidden" id="optype" name="optype" value="${param.urid!=null&&param.urid!=''?'mod':'add'}" />
+        <input type="hidden" id="urid" name="urid" value="${param.urid}"/>
+        {% set excludes=['rowversion','urid','tenantid','createdby','createdon','lastmodifiedby','lastmodifiedon'] %}
+        <div>
+            <f:tinyPanel title="{{cls_name}}基本信息" column="2">
+                {%- for col in DTO[ cls_name ]['cols'] if col['name'] not in excludes %}
+                <f:panelItem title="{{col['commit']}}">
+                    <f:textField id="{{col['name']}}" name="{{col['name']}}" check="{required:true}"/>
+                </f:panelItem>
+                {%-  endfor  %}
+            </f:tinyPanel>
+        </div>
+    </f:form>
+</div>
+
+</body>
+</html>

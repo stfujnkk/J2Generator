@@ -1,0 +1,41 @@
+package com.fingard.ats.core.db.{{project_name}}.dao.impl;
+{% set dto_name=__val__[0]+'Dto' %}
+{% set dao_name=__val__[0]+'Dao' %}
+{% set cls_name=__val__[0] %}
+import com.fingard.ats.core.db.common.dao.Impl.BaseServiceBaseDaoImpl;
+import com.fingard.ats.core.db.{{project_name}}.dao.{{dao_name}};
+import com.fingard.ats.core.db.{{project_name}}.dto.{{dto_name}};
+
+public class {{dao_name}}Impl extends BaseServiceBaseDaoImpl<{{dto_name}}> implements {{dao_name}} {
+    private final static String[] INSERTFIELDNAMES = new String[]{
+        {%- for col in DTO[ cls_name ]['cols'] %}
+        "{{col['name']}}",
+        {%-  endfor  %}
+    };
+
+    private final static String[] UPDATEFIELDNAMES = new String[]{
+        {%- for col in DTO[ cls_name ]['cols'] if col['name'] != 'urid' %}
+        "{{col['name']}}",
+        {%-  endfor  %}
+    };
+
+    @Override
+    protected Class<{{dto_name}}> getModelClass() {
+        return {{dto_name}}.class;
+    }
+
+    @Override
+    protected String getTableName() {
+        return {{dto_name}}.TABLE_NAME;
+    }
+
+    @Override
+    protected String[] createUpdateFieldNames() {
+        return UPDATEFIELDNAMES;
+    }
+
+    @Override
+    protected String[] createInsertFieldNames() {
+        return INSERTFIELDNAMES;
+    }
+}

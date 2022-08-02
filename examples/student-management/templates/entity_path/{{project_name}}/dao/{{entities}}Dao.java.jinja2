@@ -1,0 +1,9 @@
+package com.fingard.ats.core.db.{{project_name}}.dao;
+{% set dto_name=__val__[0]+'Dto' %}
+{% set dao_name=__val__[0]+'Dao' %}
+import com.fingard.ats.core.db.{{project_name}}.dto.{{dto_name}};
+import com.fingard.ats.core.db.common.dao.ServiceBaseDao;
+
+public interface {{dao_name}} extends ServiceBaseDao<{{dto_name}}> {
+
+}

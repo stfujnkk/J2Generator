@@ -1,0 +1,72 @@
+<%--
+  User: {{author}}
+  Date: {{__date__}}
+--%>
+<%@page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@include file="/common/include.jsp" %>
+<%@ page import="com.fingard.rdc.devtools.pub.util.AuthenticatedUser" %>
+<%@ page import="com.fingard.rdc.pub.service.ComRowSet" %>
+<jsp:useBean id="webhelper" scope="session" class="com.fingard.rdc.devtools.web.pub.WebHelper"/>
+{% set cls_name= __val__[0] %}
+{% set form_id= cls_name+'_form' %}
+<%
+    // 获取用户域
+    AuthenticatedUser userDomain = (AuthenticatedUser) request.getSession()
+            .getAttribute("authenticateduser");
+    String urid = request.getParameter("urid");
+    String formUrl = basePath + "/common/common!exeCRUD.do";
+    String queryUC = "UC_{{cls_name}}_IMPORT";
+    // 查询数据
+    ComRowSet rowSet = webhelper.getRowSet(
+            new String[]{"urid"},
+            new String[]{urid},
+            queryUC, userDomain,
+            "", "", "", null, "0", "0");
+    ComRowSet data = webhelper.getDisConversion(rowSet, null, null, request);
+    String isactive = data.getValue(0, "isactive").equals("×") ? "0" : "1";
+%>
+
+<head>
+    <%@include file="/common/head.jsp" %>
+    <title>{{cls_name}}详情</title>
+</head>
+<body>
+<f:buttonGroup classes="btnbar-detail">
+    <f:button id="back" text="返回" onClick="backGrid" iconCls="returnone_icon"/>
+</f:buttonGroup>
+<div>
+    <f:form action="<%=formUrl%>" onSuccess="showResponse" onFailure="showError" id="{{form_id}}">
+        <div>
+            <f:tinyPanel title="{{cls_name}}信息" column="2">
+                {%- for col in DTO[ cls_name ]['cols'] if col['name'] not in excludes %}
+                <f:panelItem title="{{col['commit']}}">
+                    <f:textField readonly="true" id="{{col['name']}}" name="{{col['name']}}" value='<%=data.getValue(0,"{{col['name']}}")%>'/>
+                </f:panelItem>
+                {%-  endfor  %}
+            </f:tinyPanel>
+        </div>
+        <f:multtabs id="detailtab" active="0">
+            <f:tab title="历史">
+                <%-- Tab标签（历史信息） --%>
+                <f:tinyPanel title="" column="2">
+                    <f:panelItem title="创建人">
+                        <f:textField readonly="true" value='<%=data.getValue(0,"createdby")%>'/>
+                    </f:panelItem>
+                    <f:panelItem title="修改人">
+                        <f:textField readonly="true" value='<%=data.getValue(0,"lastmodifiedby")%>'/>
+                    </f:panelItem>
+                    <f:panelItem title="创建日期">
+                        <f:textField readonly="true" value='<%=data.getValue(0,"createdon")%>'/>
+                    </f:panelItem>
+                    <f:panelItem title="最后修改日期">
+                        <f:textField readonly="true" value='<%=data.getValue(0,"lastmodifiedon")%>'/>
+                    </f:panelItem>
+                </f:tinyPanel>
+            </f:tab>
+        </f:multtabs>
+    </f:form>
+
+</div>
+
+</body>
+</html>
