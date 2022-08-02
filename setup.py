@@ -15,4 +15,9 @@ if __name__ == "__main__":
             'Jinja2>=3.0.0',
             'setuptools>=16.0.0'
         ],
+        entry_points={
+            'console_scripts': [
+                'j2g = j2generator.__main__:main'
+            ]
+        }
     )

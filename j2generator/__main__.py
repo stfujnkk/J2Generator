@@ -9,6 +9,7 @@ from os import path
 from shutil import copyfile
 import re
 import sys
+import time
 from typing import Dict, Generator, Tuple
 from jinja2 import Template
 
@@ -22,8 +23,8 @@ def normalize_config(conf: Dict):
         conf['defines'] = {}
 
 
-def merge_path_mappings(conf1:Dict ,conf2:Dict):
-    names1=set()
+def merge_path_mappings(conf1: Dict, conf2: Dict):
+    names1 = set()
     for item in conf1['pathMappings']:
         names1.add(item['name'])
     for item in conf2['pathMappings']:
@@ -47,7 +48,7 @@ def import_conf(conf: Dict):
                 if k in conf['defines']:
                     continue
                 conf['defines'][k] = v
-            merge_path_mappings(conf,c)
+            merge_path_mappings(conf, c)
     conf['import'] = []
 
 
@@ -171,7 +172,7 @@ def main():
         'j2generator', description='A general file generator using jinja2 syntax')
     parser.add_argument("-t", "--template", help="模板的根路径", default='templates')
     parser.add_argument("-c", "--config", help="配置文件路径", default='j2g.json')
-    parser.add_argument("-e", "--encode", help="默认编码", default='utf8')
+    parser.add_argument("-e", "--encode", help="文件编码", default='utf8')
     parser.add_argument("-v", "--verbose", help="详细信息", action='store_true')
     args = parser.parse_args()
     if args.verbose:
@@ -183,6 +184,7 @@ def main():
     with open(env['config_path'], 'r', encoding=env['encode'])as f:
         conf = json.load(f)
         import_conf(conf)
+    conf['defines']['__date__'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
     logging.debug('公共变量 {}'.format(conf['defines']))
     for item in conf['pathMappings']:
         template_path = path.abspath(
@@ -207,5 +209,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    print(sys.path)
+    main()
