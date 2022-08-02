@@ -110,7 +110,7 @@ def save_json_config(file_path: str, DTO, indent=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        'j2generator', description='A general file generator using jinja2 syntax')
+        'mysqlgen', description='A general file generator using jinja2 syntax')
     parser.add_argument("main_conf_path", help="主配置路径", default='j2g.json')
     parser.add_argument("-o","--output", help="扩展配置输出路径", default='ext.json',required=False)
     parser.add_argument("-e", "--encode", help="文件编码")
