@@ -45,8 +45,4 @@ python mysqlgen [-h] [-o OUTPUT] [-e ENCODE] main_conf_path
 
 其中`main_conf_path`为j2g配置文件路径。
 
-"C:\Users\stfujnkk\Desktop\test\J2Generator\examples\student-management\student-management.md"
-
-"C:\Users\stfujnkk\Desktop\test\J2Generator\tools\mysqlgen.md"
-
 完整的生成示例参考 [student-management](../examples/student-management/student-management.md)
