@@ -38,8 +38,9 @@ create table T_LEARN_STUDENT (
   CONSTRAINT fk_per_learn_class FOREIGN KEY (CLASSID) REFERENCES T_LEARN_CLASS (URID)
 )ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 COMMENT '学生';
 ```
-
-进入`student-management`目录，windows运行`start.cmd`脚本,`linux` 运行`start.sh`。
+- 1. 进入`student-management`目录，运行[install.cmd](install.cmd)安装依赖
+- 2. 执行上文的sql,并配置[j2g.json](j2g.json)里的db连接
+- 2. windows运行[start.cmd](start.cmd)脚本
 
 执行完成后会看到生成了个`ats` 文件夹`ext.json`和`j2g.json.bak`文件,`ats`里面即生成的代码。
 
